@@ -1,6 +1,8 @@
 ﻿@page "/"
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
+
 
 <PageTitle> SignalR Chat </PageTitle>
 <h3>SignalR Chat</h3>
@@ -42,7 +44,7 @@ else
 	private async Task Connect()
 	{
 		hubConnection = new HubConnectionBuilder()
-				.WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))	// patrz w "Program.cs"
+				.WithUrl(NavigationManager.ToAbsoluteUri($"/chathub?username={username}"))	// patrz w "Program.cs"
 				.Build();
 
 		hubConnection.On<string, string>("GetThatMessage", (user, message) =>  // patrz w "ChatHub.cs"
@@ -50,7 +52,7 @@ else
 			var msg = $"{(string.IsNullOrEmpty(user) ? "" : user + ": ")} {message}";
 			messages += msg + "\n";
 
-		//JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
+		JSRuntime.InvokeVoidAsync("scrollToBottom", TextAreaRef);
 
 		// przeładuj stronę, bo coś się zminiło :P
 		StateHasChanged();
